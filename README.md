@@ -1,6 +1,6 @@
 # DM II Project — Pharmaceutical Trade Network Analysis
 
-Data Mining II project: building and analyzing a **social network** of pharmaceutical trade flows between countries using **Gephi**, based on the CSV datasets in this folder.
+Data Mining II project: building and analyzing a **network** of pharmaceutical trade flows between countries using **Python** (pandas, NetworkX, matplotlib). Final deliverable: **A0 poster**.
 
 ---
 
@@ -30,45 +30,56 @@ The data comes from **BACI** (CEPII’s international trade database at the prod
 
 ---
 
-## Project Goal
+## Project goal
 
-Use these pharmaceutical trade datasets to:
-
-1. **Build a network** where nodes are countries (and optionally products) and edges are trade flows (value/quantity).
-2. **Analyze the network** in Gephi (centrality, communities, structure, vulnerabilities).
+1. **Build** directed, weighted networks: nodes = countries, edges = trade flows (value).
+2. **Analyze** in Python: centrality, communities, layout, and visualization.
+3. **Compare** over time (e.g. pre-COVID vs COVID/post-COVID), by product (vaccines vs other pharma), and test robustness (e.g. excluding top countries).
+4. **Produce** poster-ready figures and tables (A0).
 
 ---
 
-## Workflow
+## Plan (Python-only workflow)
 
-### 1. Data analysis (Python)
+### Step 1 — Exploratory data analysis
 
-- **Tool:** First Python script using **pandas** and **matplotlib**.
-- **Goal:** Basic understanding of the files (dimensions, value/quantity distributions, main exporters/importers, product breakdown, temporal coverage).
-- **Output:** Summary statistics and simple visualizations to guide the next step.
+- **Script:** `Python files/01_data_analysis.py`
+- **Input:** `Data/` (trade, country codes, product codes).
+- **Output:** `Outputs/figures/` — summary statistics and poster-ready plots (trade value by year, top exporters/importers, product breakdown, value distribution, dataset overview).
+- **Purpose:** Describe the dataset used in the project (first part of the poster).
 
-### 2. Data preparation for Gephi
+### Step 2 — Network construction and node-level metrics
 
-- **Goal:** Export the trade network in Gephi’s expected format.
-- **Script:** `Python files/02_prepare_gephi.py` — reads from `Data/`, writes to `Outputs/gephi/`.
-- **Format (Gephi CSV):**
-  - **Nodes table** (`nodes.csv`): columns **Id** (country code), **Label** (country name). One row per country that appears as exporter or importer.
-  - **Edges table** (`edges.csv`): columns **Source** (exporter Id), **Target** (importer Id), **Weight** (total trade value in thousand USD), **Type** (`Directed`). One row per (exporter, importer) pair; value is summed over all years and products (or over a chosen year if you use the optional single-year export).
-- **Output files (all written by one run of the script):**  
-  - Full: `nodes.csv`, `edges.csv` (same as `nodes_all.csv`, `edges_all.csv`).  
-  - Temporal: `nodes_YYYY.csv`, `edges_YYYY.csv` (each year 2016–2024); `nodes_2016_2019.csv`, `edges_2016_2019.csv`; `nodes_2020_2024.csv`, `edges_2020_2024.csv`.  
-  - Product-level: `nodes_vaccines.csv`, `edges_vaccines.csv` (HS 3002); `nodes_other_pharma.csv`, `edges_other_pharma.csv`; same with suffixes `_2016_2019` and `_2020_2024` for period comparison.  
-  See **GEPHI_GUIDELINES.md** for which files to use for each analysis.
+- **Script:** `Python files/02_metrics_year_product.py` (existing).
+- **Input:** `Data/` (trade, country codes).
+- **Output:** `Outputs/metrics_by_year.csv` — per-country, per-year metrics (in/out degree, betweenness, closeness, degree centrality, eigenvector, etc.).
+- **Purpose:** Build directed weighted graphs (by year and optionally by product), compute centralities; foundation for rankings and time series.
 
-### 3. Analysis in Gephi
+### Step 3 — Community detection and global metrics
 
-- **Goal:** Import the prepared nodes and edges, then run a proper network analysis.
-- **Steps to document in this README (to be detailed later):**
-  - Import the graph (file format: CSV, GEXF, etc.).
-  - Choose layout (e.g. Force Atlas 2, Yifan Hu).
-  - Compute metrics (degree, weighted degree, betweenness, etc.).
-  - Detect communities (e.g. Modularity).
-  - Use size/color for metrics and interpret the pharmaceutical trade network (key players, clusters, vulnerabilities).
+- **Script:** `Python files/03_communities_global_metrics.py`
+- **Input:** `Data/` (trade, country codes); builds same graphs as step 2 by year.
+- **Actions:** Louvain community detection (on undirected weighted graph), global metrics (density, clustering coefficient, reciprocity, diameter) per year.
+- **Output:** `Outputs/communities_by_year.csv` (country, year, community_id); `Outputs/global_metrics_by_year.csv` (year, n_nodes, n_edges, n_communities, density, clustering_coefficient, reciprocity, diameter).
+
+### Step 4 — Layout and network visualization
+
+- **Script:** `Python files/04_layout_network_visualization.py` (matplotlib + NetworkX).
+- **Input:** Trade data (`Data/`), node metrics (`Outputs/metrics_by_year.csv`), communities (`Outputs/communities_by_year.csv`) from steps 2–3.
+- **Actions:** Rebuild graphs, compute layout (spring layout with edge weights), draw networks (nodes colored by community, sized by centrality), and export high-resolution PNG/PDF suitable for the poster.
+- **Output:** `Outputs/figures/` — network maps for each year, period comparisons (2016–2019 vs 2020–2024), and product subsets (vaccines vs other pharma).
+
+### Step 5 — Temporal and product-level comparison
+
+- **To implement in Python** (same pipeline, different graph variants).
+- **Variants:** By period (2016–2019, 2020–2024), by year, by product group (vaccines HS 3002 vs other pharma). Compare rankings, communities, and global metrics across variants.
+- **Output:** Tables and figures comparing structure over time and by product; short narrative (e.g. COVID-19 structural breaks).
+
+### Step 6 — Sensitivity analysis
+
+- **To implement in Python.**
+- **Actions:** Exclude top N countries (by strength or betweenness), rebuild graph, recompute metrics and communities. Compare with full graph.
+- **Output:** Summary of robustness (e.g. “rankings stable when top 5 exporters removed”) and optional comparison table/figure.
 
 ---
 
@@ -79,13 +90,43 @@ Use these pharmaceutical trade datasets to:
   - `Country Codes V2026.csv` — country code ↔ name.  
   - `Codes produit HS92 2026.csv` — product (HS) code descriptions.  
   - `Metadata_Pharmaceutical_Trade_Dataset_DMII.txt` — dataset description and filter.
+
 - **Python files/**  
   - `01_data_analysis.py` — step 1: exploratory analysis and poster figures.  
-  - `02_prepare_gephi.py` — step 2: build Gephi nodes/edges CSV from `Data/`.
+  - `metrics_year_product.py` — step 2: build graphs by year/product, compute node metrics, export `metrics_by_year.csv`.  
+  - `03_communities_global_metrics.py` — step 3: Louvain communities and global metrics by year.  
+  - `04_layout_network_visualization.py` — step 4: layout and network maps for poster.  
+  - *(Steps 5–6: to be implemented in new or extended scripts.)*
+
 - **Outputs/**  
-  - `figures/` — poster-ready figures (PNG + PDF) from step 1.  
-  - `gephi/` — Gephi-ready nodes/edges CSV (full, temporal by year and period, product-level vaccines and other pharma) from step 2.
+  - `figures/` — poster-ready figures (PNG/PDF) from steps 1 and 4.  
+  - `metrics_by_year.csv` — node-level metrics by year (step 2).  
+  - `communities_by_year.csv` — node partition by year (step 3).  
+  - `global_metrics_by_year.csv` — density, clustering, reciprocity, diameter per year (step 3).  
+  - *(Further tables and figures from steps 4–6 as needed.)*
 
 ---
 
-*README will be updated as the analysis script, data preparation, and Gephi instructions are completed.*
+## How to run
+
+1. **Environment:** `pip install -r requirements.txt` (pandas, matplotlib, networkx).
+2. **Step 1:** `python "Python files/01_data_analysis.py"` → figures in `Outputs/figures/`.
+3. **Step 2:** `python "Python files/metrics_year_product.py"` → `Outputs/metrics_by_year.csv`.
+4. **Step 3:** `python "Python files/03_communities_global_metrics.py"` → `Outputs/communities_by_year.csv`, `Outputs/global_metrics_by_year.csv`.
+5. **Step 4:** `python "Python files/04_layout_network_visualization.py"` → network maps in `Outputs/figures/`.
+6. **Steps 5–6:** Implement and run as the pipeline is completed.
+
+---
+
+## Summary
+
+| Step | What | Script / to do |
+|------|------|-----------------|
+| 1 | Exploratory analysis, dataset figures | `01_data_analysis.py` ✓ |
+| 2 | Graphs + node metrics by year/product | `metrics_year_product.py` ✓ |
+| 3 | Communities + global metrics | `03_communities_global_metrics.py` ✓ |
+| 4 | Layout + network maps for poster | `04_layout_network_visualization.py` ✓ |
+| 5 | Temporal + product comparison | To implement |
+| 6 | Sensitivity (exclude top countries) | To implement |
+
+All analysis and figures are produced in **Python**; no Gephi required.
