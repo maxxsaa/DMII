@@ -1,2 +1,5 @@
 # macOS
 .DS_Store
+
+# Generated figures (re-create via Python scripts)
+Outputs/

@@ -71,9 +71,13 @@ The data comes from **BACI** (CEPII’s international trade database at the prod
 
 ### Step 5 — Temporal and product-level comparison
 
-- **To implement in Python** (same pipeline, different graph variants).
-- **Variants:** By period (2016–2019, 2020–2024), by year, by product group (vaccines HS 3002 vs other pharma). Compare rankings, communities, and global metrics across variants.
-- **Output:** Tables and figures comparing structure over time and by product; short narrative (e.g. COVID-19 structural breaks).
+- **Script:** `Python files/05_temporal_product_comparison.py`
+- **Input:** CSVs from steps 2–3 (`metrics_by_year.csv`, `communities_by_year.csv`, `global_metrics_by_year.csv`) + raw trade data for product-level graphs.
+- **Actions:**
+  - **(A) Temporal:** Global metrics over time (line plots), centrality bump charts (top-10 rankings by year), pre-COVID vs COVID/post-COVID bar comparison, period ranking table.
+  - **(B) Product-level:** Build graphs for vaccines (HS 3002) vs other pharma for each period, compute metrics + communities, compare with grouped bar charts and top-10 tables.
+  - **(C) Community stability:** NMI between consecutive years.
+- **Output:** `Outputs/figures/step5_*.png|pdf`, `Outputs/step5_*.csv` (ranking tables, product-level metrics, NMI).
 
 ### Step 6 — Sensitivity analysis
 
@@ -96,7 +100,8 @@ The data comes from **BACI** (CEPII’s international trade database at the prod
   - `metrics_year_product.py` — step 2: build graphs by year/product, compute node metrics, export `metrics_by_year.csv`.  
   - `03_communities_global_metrics.py` — step 3: Louvain communities and global metrics by year.  
   - `04_layout_network_visualization.py` — step 4: layout and network maps for poster.  
-  - *(Steps 5–6: to be implemented in new or extended scripts.)*
+  - `05_temporal_product_comparison.py` — step 5: temporal, product-level, and community-stability comparisons.  
+  - *(Step 6: to be implemented.)*
 
 - **Outputs/**  
   - `figures/` — poster-ready figures (PNG/PDF) from steps 1 and 4.  
@@ -109,12 +114,13 @@ The data comes from **BACI** (CEPII’s international trade database at the prod
 
 ## How to run
 
-1. **Environment:** `pip install -r requirements.txt` (pandas, matplotlib, networkx).
+1. **Environment:** `pip install -r requirements.txt` (pandas, matplotlib, networkx, scikit-learn).
 2. **Step 1:** `python "Python files/01_data_analysis.py"` → figures in `Outputs/figures/`.
 3. **Step 2:** `python "Python files/metrics_year_product.py"` → `Outputs/metrics_by_year.csv`.
 4. **Step 3:** `python "Python files/03_communities_global_metrics.py"` → `Outputs/communities_by_year.csv`, `Outputs/global_metrics_by_year.csv`.
 5. **Step 4:** `python "Python files/04_layout_network_visualization.py"` → network maps in `Outputs/figures/`.
-6. **Steps 5–6:** Implement and run as the pipeline is completed.
+6. **Step 5:** `python "Python files/05_temporal_product_comparison.py"` → comparison figures and tables in `Outputs/`.
+7. **Step 6:** Implement and run as the pipeline is completed.
 
 ---
 
@@ -126,7 +132,7 @@ The data comes from **BACI** (CEPII’s international trade database at the prod
 | 2 | Graphs + node metrics by year/product | `metrics_year_product.py` ✓ |
 | 3 | Communities + global metrics | `03_communities_global_metrics.py` ✓ |
 | 4 | Layout + network maps for poster | `04_layout_network_visualization.py` ✓ |
-| 5 | Temporal + product comparison | To implement |
+| 5 | Temporal + product comparison | `05_temporal_product_comparison.py` ✓ |
 | 6 | Sensitivity (exclude top countries) | To implement |
 
 All analysis and figures are produced in **Python**; no Gephi required.
