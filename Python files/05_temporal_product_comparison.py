@@ -179,9 +179,10 @@ def plot_top_rankings_over_time(metric: str = "betweenness", top_k: int = 10) ->
     # Rank within each year (ascending rank = 1 is highest value)
     df["rank"] = df.groupby("year")[metric].rank(ascending=False, method="min")
 
-    # Pick countries that appear in top_k in at least one year
-    ever_top = df[df["rank"] <= top_k]["country"].unique()
-    sub = df[df["country"].isin(ever_top)]
+    # Pick the top_k countries by average metric value across all years
+    avg_metric = df.groupby("country")[metric].mean().nlargest(top_k)
+    top_countries = avg_metric.index.tolist()
+    sub = df[df["country"].isin(top_countries)]
 
     fig, ax = plt.subplots(figsize=(14, 8))
     for country, grp in sub.groupby("country"):
