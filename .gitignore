@@ -1,5 +1,5 @@
 # macOS
 .DS_Store
 
-# Generated figures (re-create via Python scripts)
+# Generated outputs (re-create via Python scripts — one subfolder per step)
 Outputs/

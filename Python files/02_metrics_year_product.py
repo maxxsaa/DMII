@@ -12,7 +12,7 @@ import networkx as nx
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 DATA_DIR = os.path.join(PROJECT_ROOT, "Data")
-OUTPUT_DIR = os.path.join(PROJECT_ROOT, "Outputs")
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "Outputs", "Step 2")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Import dataset (BACI trade flows)

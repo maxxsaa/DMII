@@ -24,10 +24,10 @@ import pandas as pd
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 DATA_DIR = os.path.join(PROJECT_ROOT, "Data")
-OUTPUT_DIR = os.path.join(PROJECT_ROOT, "Outputs")
-FIGURES_DIR = os.path.join(OUTPUT_DIR, "figures")
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "Outputs", "Step 4")
+FIGURES_DIR = OUTPUT_DIR
 
-os.makedirs(FIGURES_DIR, exist_ok=True)
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
 # ---------------------------------------------------------------------------
@@ -106,8 +106,8 @@ def subset_by_product_group(df: pd.DataFrame, group: str) -> pd.DataFrame:
 # Node attributes: metrics and communities
 # ---------------------------------------------------------------------------
 
-METRICS_PATH = os.path.join(OUTPUT_DIR, "metrics_by_year.csv")
-COMMUNITIES_PATH = os.path.join(OUTPUT_DIR, "communities_by_year.csv")
+METRICS_PATH = os.path.join(PROJECT_ROOT, "Outputs", "Step 2", "metrics_by_year.csv")
+COMMUNITIES_PATH = os.path.join(PROJECT_ROOT, "Outputs", "Step 3", "communities_by_year.csv")
 
 
 def load_node_attributes_for_year(year: int) -> pd.DataFrame:

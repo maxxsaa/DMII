@@ -15,7 +15,7 @@ import matplotlib as mpl
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 DATA_DIR = os.path.join(PROJECT_ROOT, "Data")
-OUTPUT_DIR = os.path.join(PROJECT_ROOT, "Outputs", "figures")
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "Outputs", "Step 1")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # A0 poster: panels are often ~250–400 mm; use high DPI for print
